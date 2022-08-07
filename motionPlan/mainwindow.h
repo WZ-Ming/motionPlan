@@ -25,17 +25,15 @@ public:
     ~MainWindow();
 
 private slots:
-    void rec_data(int,int, int, int, double);
+    void rec_cal_done_sig();
 
-    void on_btn_Axis_StepF_clicked();
+    void rec_data(double, double, double);
 
-    void on_pause_clicked();
+    void on_btn_start_clicked();
 
-    void on_start_clicked();
+    void on_btn_clear_clicked();
 
-    void on_btn_old_path_clicked();
-
-    void on_exp_path_clicked();
+    void on_btn_pause_clicked();
 
 protected:
     void wheelEvent(QWheelEvent* event);
@@ -47,13 +45,11 @@ protected:
     void mouseReleaseEvent(QMouseEvent *event);
 
 private:
-    double axis_time[32]={0};
     bool drag_flag=false;
     QPoint m_lastPointF;
-    QList<QColor> color{Qt::red,Qt::black,Qt::blue,Qt::darkGreen,Qt::black,Qt::blue,Qt::darkGreen,Qt::red};
-    void init_chart();
-    bool checking_axis_data();
+    void init_chartAndComBox();
 
+    QLineSeries *series=nullptr;
     Ui::MainWindow *ui;
     autoRun *autorun=nullptr;
 };
