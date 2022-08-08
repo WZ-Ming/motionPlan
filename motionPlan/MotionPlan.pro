@@ -8,7 +8,7 @@ QT       += core gui charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = Spath_simulation
+TARGET = MotionPlan
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use

@@ -6,48 +6,61 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-    autorun=new autoRun();
-    autorun->start();
-    connect(autorun,SIGNAL(send_data(int,int,int,int,double)),this,SLOT(rec_data(int,int,int,int,double)));
-    init_chart();
     centralWidget()->setMouseTracking(true);
     setMouseTracking(true);
     ui->chartView->setAttribute(Qt::WA_TransparentForMouseEvents, true);
+    autorun=new autoRun();
+    connect(autorun,SIGNAL(send_data(double,double,double)),this,SLOT(rec_data(double,double,double)),Qt::BlockingQueuedConnection);
+    connect(autorun,&autoRun::send_cal_done_sig,this,&MainWindow::rec_cal_done_sig);
+    init_chartAndComBox();
+    setWindowTitle("静态前瞻式7段S型速度规划");
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
     if(autorun!=nullptr){
-        autorun->run_var=false;
-        QThread::msleep(100);
         autorun->quit();
-        while(autorun->isRunning());
+        autorun->wait();
         delete autorun;
     }
 }
 
-void MainWindow::rec_data(int path_type,int axis, int inc_pos, int move_pos,double time)
+void MainWindow::rec_cal_done_sig()
 {
-    int t1=QTime(0,0,0).msecsTo(QTime::currentTime());
-    if(path_type){
-        QLineSeries *series=(QLineSeries *)ui->chartView->chart()->series().at(4);
-        series->setName("旧插补耗时:"+QString::number(time));
-    }
-    else{
-        QLineSeries *series=(QLineSeries *)ui->chartView->chart()->series().at(5);
-        series->setName("新插补耗时:"+QString::number(time));
-    }
-    autorun->cal_delay=ui->lineEdit_delay->text().toInt();
-    axis_time[axis]+=0.001;
-    QLineSeries *series=(QLineSeries *)ui->chartView->chart()->series().at(axis);
-    series->setName(QString::number(axis+1)+"轴:"+QString::number(move_pos));
-    series->append(axis_time[axis],inc_pos);
-    int t2=QTime(0,0,0).msecsTo(QTime::currentTime());
-    autorun->cal_time=t2-t1;
+    autorun->quit();
+    autorun->wait();
 }
 
-void MainWindow::init_chart()
+void MainWindow::rec_data(double inc_pos, double move_pos, double time)
+{
+    series->setName("耗时:"+QString::number(time)+"秒   总位移:"+QString::number(move_pos));
+    series->append(time,inc_pos);
+    static bool outRange=false;
+    if(time<=rangeX0){
+        rangeX0=time;
+        outRange=true;
+    }
+    else if(time>=rangeX1){
+        rangeX1=time;
+        outRange=true;
+    }
+    if(inc_pos<=rangeY0){
+        rangeY0=inc_pos;
+        outRange=true;
+    }
+    else if(inc_pos>=rangeY1){
+        rangeY1=inc_pos;
+        outRange=true;
+    }
+    if(outRange){
+        ui->chartView->chart()->axisX()->setRange(rangeX0-autorun->pathInit.deltaT,rangeX1+autorun->pathInit.deltaT);
+        ui->chartView->chart()->axisY()->setRange(rangeY0-1,rangeY1+1);
+        outRange=false;
+    }
+}
+
+void MainWindow::init_chartAndComBox()
 {
     QChart *chart=new QChart();
     ui->chartView->setChart(chart);
@@ -57,154 +70,55 @@ void MainWindow::init_chart()
     pen.setWidth(2);
     QValueAxis *axisX=new QValueAxis;
     axisX->setLabelFormat("%0.3f");
-    axisX->setTickCount(30);
+    axisX->setTickCount(0);
     axisX->setTitleText("时间(秒)");
     QValueAxis *axisY=new QValueAxis;
     axisY->setLabelFormat("%0.3f");
-    axisY->setTickCount(31);
-    axisY->setTitleText("位移(脉冲数)");
-    for(int i=0;i<6;i++){
-        if(i==4){
-            QLineSeries *seriesTmp=new QLineSeries;
-            QString seriesName="旧插补耗时";
-            seriesTmp->setName(seriesName);
-            pen.setColor(color.at(i));
-            seriesTmp->setPen(pen);
-            chart->addSeries(seriesTmp);
-            chart->setAxisX(axisX,seriesTmp);
-            chart->setAxisY(axisY,seriesTmp);
-        }
-        else if(i==5){
-            QLineSeries *seriesTmp=new QLineSeries;
-            QString seriesName="新插补耗时";
-            seriesTmp->setName(seriesName);
-            pen.setColor(color.at(i));
-            seriesTmp->setPen(pen);
-            chart->addSeries(seriesTmp);
-            chart->setAxisX(axisX,seriesTmp);
-            chart->setAxisY(axisY,seriesTmp);
-        }
-        else{
-            QLineSeries *seriesTmp=new QLineSeries;
-            QString seriesName=QString::number(i+1)+"轴";
-            seriesTmp->setName(seriesName);
-            pen.setColor(color.at(i));
-            seriesTmp->setPen(pen);
-            chart->addSeries(seriesTmp);
-            chart->setAxisX(axisX,seriesTmp);
-            chart->setAxisY(axisY,seriesTmp);
-        }
-    }
-    for(int i=0;i<4;i++) axis_time[i]=0;
+    axisY->setTickCount(0);
+    axisY->setTitleText("位移");
+    series=new QLineSeries;
+    series->setName("耗时");
+    pen.setColor(Qt::black);
+    series->setPen(pen);
+    chart->addSeries(series);
+    chart->setAxisX(axisX,series);
+    chart->setAxisY(axisY,series);
+    axisX->setRange(rangeX0,rangeX1);
+    axisY->setRange(rangeY0,rangeY1);
 }
 
-bool MainWindow::checking_axis_data()
+void MainWindow::on_btn_start_clicked()
 {
-    if(ui->checkBox_AxisIdx_0->checkState()==Qt::Checked){
-        path_axis_motion axis_data;
-        axis_data.cmd_pos=ui->lineEdit_Axis_dis_0->text().toDouble();
-        axis_data.Vmax=ui->lineEdit_Axis_spd_0->text().toDouble();
-        axis_data.maxAuv_acc=ui->lineEdit_Axis_acc_0->text().toDouble();
-        axis_data.Jerk=ui->lineEdit_Jerk_0->text().toDouble();
-        autorun->motion_data_pravete.append(axis_data);
+    if(!autorun->isRunning()){
+        autorun->pathInit.v0=ui->lineEdit_V0->text().toDouble();
+        autorun->pathInit.ve=ui->lineEdit_Ve->text().toDouble();
+        autorun->pathInit.Jerk=ui->lineEdit_Jerk->text().toDouble();
+        autorun->pathInit.VMax=ui->lineEdit_VMax->text().toDouble();
+        autorun->pathInit.dec_ve=ui->lineEdit_decVe->text().toDouble();
+        autorun->pathInit.cmd_pos=ui->lineEdit_distance->text().toDouble();
+        autorun->pathInit.max_acc=ui->lineEdit_acc->text().toDouble();
+        autorun->pathInit.dec_jerk_muti=ui->doubleSpinBox_decMuti->value();
+        autorun->pathInit.maxProportion=1;
+        autorun->pathInit.deltaT=0.001;
+        ui->chartView->chart()->update();
+        autorun->start();
     }
-    if(ui->checkBox_AxisIdx_1->checkState()==Qt::Checked){
-        path_axis_motion axis_data;
-        axis_data.cmd_pos=ui->lineEdit_Axis_dis_1->text().toDouble();
-        axis_data.Vmax=ui->lineEdit_Axis_spd_1->text().toDouble();
-        axis_data.maxAuv_acc=ui->lineEdit_Axis_acc_1->text().toDouble();
-        axis_data.Jerk=ui->lineEdit_Jerk_1->text().toDouble();
-        autorun->motion_data_pravete.append(axis_data);
+    else{
+        autorun->path_pause=false;
+        ui->btn_start->setText("启动");
     }
-    if(ui->checkBox_AxisIdx_2->checkState()==Qt::Checked){
-        path_axis_motion axis_data;
-        axis_data.cmd_pos=ui->lineEdit_Axis_dis_2->text().toDouble();
-        axis_data.Vmax=ui->lineEdit_Axis_spd_2->text().toDouble();
-        axis_data.maxAuv_acc=ui->lineEdit_Axis_acc_2->text().toDouble();
-        axis_data.Jerk=ui->lineEdit_Jerk_2->text().toDouble();
-        autorun->motion_data_pravete.append(axis_data);
-    }
-    if(ui->checkBox_AxisIdx_3->checkState()==Qt::Checked){
-        path_axis_motion axis_data;
-        axis_data.cmd_pos=ui->lineEdit_Axis_dis_3->text().toDouble();
-        axis_data.Vmax=ui->lineEdit_Axis_spd_3->text().toDouble();
-        axis_data.maxAuv_acc=ui->lineEdit_Axis_acc_3->text().toDouble();
-        axis_data.Jerk=ui->lineEdit_Jerk_3->text().toDouble();
-        autorun->motion_data_pravete.append(axis_data);
-    }
-    if(autorun->motion_data_pravete.size()>0){
-        QValueAxis *axisX=(QValueAxis *)ui->chartView->chart()->axisX();
-        QValueAxis *axisY=(QValueAxis *)ui->chartView->chart()->axisY();
-        axisX->setRange(ui->lineEdit_minX->text().toDouble(),ui->lineEdit_maxX->text().toDouble());
-        axisY->setRange(ui->lineEdit_minY->text().toDouble(),ui->lineEdit_maxY->text().toDouble());
-        autorun->cal_delay=ui->lineEdit_delay->text().toInt();
-        return true;
-    }
-    else return false;
 }
 
-void MainWindow::on_btn_Axis_StepF_clicked()
-{
-    autorun->motion_data_pravete.clear();
-    if(!checking_axis_data())return;
-    if(ui->checkBox_float->checkState()==Qt::Checked)autorun->do_float=true;
-    else autorun->do_float=false;
-    autorun->v0=ui->v0->text().toDouble();
-    autorun->ve=ui->ve->text().toDouble();
-    QString params_FILE_PATH ="E:/DeskTop/axis_data.txt";
-    QFile file(params_FILE_PATH);
-    QString data;
-    data.clear();
-    if(file.open(QIODevice::WriteOnly | QIODevice::Text)){
-        QTextStream out(&file);
-        out<<data;
-        file.flush();
-        file.close();
-    }
-    autorun->cmd=31;
-}
-
-void MainWindow::on_btn_old_path_clicked()
-{
-    autorun->motion_data_pravete.clear();
-    if(!checking_axis_data())return;
-    if(ui->checkBox_float->checkState()==Qt::Checked)autorun->do_float=true;
-    else autorun->do_float=false;
-    autorun->v0=ui->v0->text().toDouble();
-    autorun->ve=ui->ve->text().toDouble();
-    autorun->cmd=32;
-}
-
-void MainWindow::on_exp_path_clicked()
-{
-    autorun->motion_data_pravete.clear();
-    if(!checking_axis_data())return;
-    if(ui->checkBox_float->checkState()==Qt::Checked)autorun->do_float=true;
-    else autorun->do_float=false;
-    autorun->v0=ui->v0->text().toDouble();
-    autorun->ve=ui->ve->text().toDouble();
-    QString params_FILE_PATH ="E:/DeskTop/axis_data.txt";
-    QFile file(params_FILE_PATH);
-    QString data;
-    data.clear();
-    if(file.open(QIODevice::WriteOnly | QIODevice::Text)){
-        QTextStream out(&file);
-        out<<data;
-        file.flush();
-        file.close();
-    }
-    autorun->muti_T=ui->muti_T->text().toDouble();
-    autorun->cmd=33;
-}
-
-void MainWindow::on_pause_clicked()
+void MainWindow::on_btn_pause_clicked()
 {
     autorun->path_pause=true;
+    ui->btn_start->setText("继续");
 }
 
-void MainWindow::on_start_clicked()
+void MainWindow::on_btn_clear_clicked()
 {
-    autorun->path_pause=false;
+    if(series!=nullptr)
+        series->clear();
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
@@ -218,7 +132,7 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
 
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
-   drag_flag = false;
+    drag_flag = false;
     setCursor(Qt::ArrowCursor);
 }
 
@@ -229,6 +143,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
         QPoint offset = curPos - m_lastPointF;
         m_lastPointF = curPos;
         ui->chartView->chart()->scroll(-offset.x(), offset.y());
+        ui->chartView->chart()->update();
     }
 }
 
@@ -258,6 +173,31 @@ void MainWindow::wheelEvent(QWheelEvent *event)
         leftOffset = 1.0 * factor * (xCentral - xMin);
         rightOffset = 1.0 * factor * (xMax - xCentral);
     }
-    ui->chartView->chart()->axisX()->setRange(xCentral - leftOffset, xCentral + rightOffset);
-    ui->chartView->chart()->axisY()->setRange(yCentral - bottomOffset, yCentral + topOffset);
+    rangeX0=xCentral - leftOffset;
+    rangeX1=xCentral + rightOffset;
+    rangeY0=yCentral - bottomOffset;
+    rangeY1=yCentral + topOffset;
+
+    ui->chartView->chart()->axisX()->setRange(rangeX0,rangeX1);
+    ui->chartView->chart()->axisY()->setRange(rangeY0,rangeY1);
+    ui->chartView->chart()->update();
+}
+
+void MainWindow::on_btn_showPoints_clicked()
+{
+    static bool showPoint=false;
+    if(series!=nullptr){
+        if(showPoint){
+            series->setPointsVisible(false);
+            series->setPointLabelsVisible(false);
+            ui->btn_showPoints->setText("显示数据");
+        }
+        else{
+            series->setPointsVisible(true);
+            series->setPointLabelsVisible(true);
+            ui->btn_showPoints->setText("隐藏数据");
+        }
+        if(showPoint) showPoint=false;
+        else showPoint=true;
+    }
 }
