@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>503</width>
+    <height>402</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/res/icons/log.png</normaloff>:/res/icons/log.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout_3">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QLineEdit" name="dirShowLineEdit">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="chooseDirBtn">
+        <property name="text">
+         <string>选择接收目录</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QFrame" name="frame">
+      <property name="maximumSize">
+       <size>
+        <width>16777215</width>
+        <height>42</height>
+       </size>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Raised</enum>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_6">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
+       <item>
+        <widget class="QStackedWidget" name="stackedWidget">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>40</height>
+          </size>
+         </property>
+         <property name="currentIndex">
+          <number>1</number>
+         </property>
+         <widget class="QWidget" name="page">
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <item>
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>客户端地址:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="clientcomBox">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" name="page_2">
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <property name="leftMargin">
+            <number>0</number>
+           </property>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_2">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="label">
+               <property name="mouseTracking">
+                <bool>true</bool>
+               </property>
+               <property name="text">
+                <string>服务端地址:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="serverAddressLineEdit">
+               <property name="text">
+                <string>192.168.34.40</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <item>
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>本地IP:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="localIpComBox">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QTextEdit" name="textEdit"/>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <item>
+       <widget class="QPushButton" name="testBtn">
+        <property name="text">
+         <string>测试连接</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>18</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="fileTransmitBtn">
+        <property name="text">
+         <string>文件传输</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="stopSendBtn">
+        <property name="text">
+         <string>停止发送</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <spacer name="horizontalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>13</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="clearTextBtn">
+        <property name="text">
+         <string>清理文本</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonTextUnderIcon</enum>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="act_startListen"/>
+   <addaction name="act_stopListen"/>
+   <addaction name="act_connect"/>
+   <addaction name="act_disconnect"/>
+   <addaction name="act_server"/>
+   <addaction name="act_client"/>
+  </widget>
+  <action name="act_startListen">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/res/icons/开始监听.png</normaloff>:/res/icons/开始监听.png</iconset>
+   </property>
+   <property name="text">
+    <string>开始监听</string>
+   </property>
+  </action>
+  <action name="act_stopListen">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/res/icons/停止监听.png</normaloff>:/res/icons/停止监听.png</iconset>
+   </property>
+   <property name="text">
+    <string>停止监听</string>
+   </property>
+  </action>
+  <action name="act_clearText">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/res/icons/清除文本.png</normaloff>:/res/icons/清除文本.png</iconset>
+   </property>
+   <property name="text">
+    <string>清理文本</string>
+   </property>
+  </action>
+  <action name="act_connect">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/res/icons/connect.png</normaloff>:/res/icons/connect.png</iconset>
+   </property>
+   <property name="text">
+    <string>建立连接</string>
+   </property>
+  </action>
+  <action name="act_disconnect">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/res/icons/disconnect.png</normaloff>:/res/icons/disconnect.png</iconset>
+   </property>
+   <property name="text">
+    <string>断开连接</string>
+   </property>
+  </action>
+  <action name="act_server">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/res/icons/server.png</normaloff>:/res/icons/server.png</iconset>
+   </property>
+   <property name="text">
+    <string>转到服务端</string>
+   </property>
+  </action>
+  <action name="act_client">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/res/icons/client.png</normaloff>:/res/icons/client.png</iconset>
+   </property>
+   <property name="text">
+    <string>转到客户端</string>
+   </property>
+  </action>
+  <action name="act_test">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/res/icons/test.png</normaloff>:/res/icons/test.png</iconset>
+   </property>
+   <property name="text">
+    <string>测试</string>
+   </property>
+  </action>
+  <action name="act_fileTransmit">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/res/icons/fileSend.png</normaloff>:/res/icons/fileSend.png</iconset>
+   </property>
+   <property name="text">
+    <string>文件传输</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>
