@@ -1,11 +1,12 @@
 #include "mainwindow.h"
 #include <QApplication>
+#include<iostream>
+#include<string.h>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     MainWindow w;
-    w.showMaximized();
-
+    w.show();
     return a.exec();
 }

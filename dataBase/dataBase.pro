@@ -1,21 +1,20 @@
 #-------------------------------------------------
 #
-# Project created by QtCreator 2021-09-15T17:02:59
+# Project created by QtCreator 2022-08-09T10:49:20
 #
 #-------------------------------------------------
 
-QT       += core gui charts
+QT       += core gui sql
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = motionPlan
+TARGET = dataBase
 TEMPLATE = app
 
 # The following define makes your compiler emit warnings if you use
-# any feature of Qt which as been marked as deprecated (the exact warnings
+# any feature of Qt which has been marked as deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
 # deprecated API in order to know how to port your code away from it.
-
 DEFINES += QT_DEPRECATED_WARNINGS
 
 # You can also make your code fail to compile if you use deprecated APIs.
@@ -23,15 +22,25 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+CONFIG += c++11
 
-SOURCES += main.cpp\
+SOURCES += \
+        main.cpp \
         mainwindow.cpp \
-    autorun.cpp \
-    motionplan.cpp
+    columnsetting.cpp
 
-HEADERS  += mainwindow.h \
-    autorun.h \
-    motionplan.h
+HEADERS += \
+        mainwindow.h \
+    columnsetting.h
 
-FORMS    += mainwindow.ui
+FORMS += \
+        mainwindow.ui \
+    columnsetting.ui
 
+# Default rules for deployment.
+qnx: target.path = /tmp/$${TARGET}/bin
+else: unix:!android: target.path = /opt/$${TARGET}/bin
+!isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    picture.qrc
