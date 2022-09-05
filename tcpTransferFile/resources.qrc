@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/res">
+        <file>icons/开始监听.png</file>
+        <file>icons/停止监听.png</file>
+        <file>icons/清除文本.png</file>
+        <file>icons/connect.png</file>
+        <file>icons/disconnect.png</file>
+        <file>icons/client.png</file>
+        <file>icons/server.png</file>
+        <file>icons/fileSend.png</file>
+        <file>icons/test.png</file>
+    </qresource>
+</RCC>
