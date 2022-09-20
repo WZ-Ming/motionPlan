@@ -215,7 +215,7 @@
               </font>
              </property>
              <property name="text">
-              <string>300</string>
+              <string>123.456</string>
              </property>
             </widget>
            </item>
@@ -260,7 +260,7 @@
               </sizepolicy>
              </property>
              <property name="text">
-              <string>0</string>
+              <string>1</string>
              </property>
             </widget>
            </item>
@@ -279,7 +279,7 @@
               </font>
              </property>
              <property name="text">
-              <string>50000</string>
+              <string>5000</string>
              </property>
             </widget>
            </item>

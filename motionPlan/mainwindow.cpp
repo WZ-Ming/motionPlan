@@ -83,7 +83,7 @@ void MainWindow::rec_data(double realData, double allData, double vs, double acc
     row=dataTableWidget->rowCount()-1;
     dataTableWidget->setItem(row,0,new QTableWidgetItem(QString::number(time)));
     dataTableWidget->item (row,0)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-    dataTableWidget->setItem(row,1,new QTableWidgetItem(QString::number(allData)));
+    dataTableWidget->setItem(row,1,new QTableWidgetItem(QString::number(allData,'f',6)));
     dataTableWidget->item (row,1)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
     dataTableWidget->setItem(row,2,new QTableWidgetItem(QString::number(realData)));
     dataTableWidget->item (row,2)->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
@@ -105,6 +105,7 @@ void MainWindow::rec_cal_done_sig()
 {
     autorun->quit();
     autorun->wait();
+    ui->btn_start->setText("启动");
 }
 
 void MainWindow::on_btn_start_clicked()

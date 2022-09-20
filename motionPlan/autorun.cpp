@@ -28,5 +28,6 @@ void autoRun::run(){
         }
     }
     forceQuit=false;
+    path_pause=false;
     emit send_cal_done_sig();
 }

@@ -107,10 +107,8 @@ bool motionPlan::performPath(bool path_pause)//执行规划
         if(dec_finished){
             if(path_pause_cmd)
                 return false;
-            else{
-                decInit=false;
+            else
                 dec_finished=false;
-            }
         }
         else{
             if(path_pause_cmd & !decInit){
@@ -120,8 +118,8 @@ bool motionPlan::performPath(bool path_pause)//执行规划
                     get_ficure_point(cal_vmax,dec_ve,t1_tmp,t2_tmp);
                     preViewDone=false;
                     preView_phase=2;
-                    decInit=true;
                 }
+                decInit=true;
             }
         }
     }
@@ -326,9 +324,11 @@ void motionPlan::doMotionPlan(bool doPath)//进入运动模式
             if(!haveData){
                 if(path_pause_cmd && fabs(remaining_pos-cur_move_pos)>coverAccuracy){
                     dec_finished=true;
+                    decInit=false;
                     dec_move_pos+=(cmd_pos-remaining_pos+cur_move_pos);
                     cmd_pos=remaining_pos-cur_move_pos;
                     v0=vs;
+                    val_Auv=0;
                     preView_phase=0;
                     preViewDone=false;
                     acc_t=0;
@@ -510,7 +510,7 @@ void motionPlan::get_move_msg(double &curProportion,double &curPos_m,double &cur
 #ifdef motionDebug
 void motionPlan::get_move_msg(QString &motionMsg)
 {
-    motionMsg+=tr("当前位移:")+QString::number(cmd_pos-remaining_pos+dec_move_pos)+"\n";
+    motionMsg+=tr("当前位移:")+QString::number(cmd_pos-remaining_pos+dec_move_pos,'f',6)+"\n";
     motionMsg+=tr("当前速度:")+QString::number(vs)+"\n";
     motionMsg+=tr("当前加速度:")+QString::number(val_Auv)+"\n";
     motionMsg+=tr("当前时间:")+QString::number(recordTime)+"\n";
